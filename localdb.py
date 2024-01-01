@@ -1,9 +1,34 @@
-import sys
-import uuid
-import requests
-from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QMessageBox
-from PyQt6.QtGui import QIcon
+#import module
+import sys  # sys is a built-in module in python
+import uuid  # uuid is a built-in module in python
+import sqlite3 #sqlite2 is a built-in module in python 
+#import sqlite4 
+import requests # requests is a 3rd party module in python
 
+# from top-level module.submodul import  element1,element2,........
+from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QMessageBox
+from PyQt6.QtGui import QIcon # PyQt6 is a 3rd party module in python
+
+#return= module.method(actual argument)
+conn  =  sqlite3.connect('ranu.db') # every function return something
+cursor = conn.cursor() 
+
+# Create a Table if not exists
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,  -- Add TEXT here
+        email TEXT NOT NULL,
+        sno TEXT NOT NULL
+    )
+""")
+conn.commit()
+
+'''connId  =  sqlite4.connect("a.db")
+print(connId)'''
+
+#1. function defination is a one time process
 def ranuLaptopHardwareId():
     hardwareid = uuid.UUID(int=uuid.getnode()).hex[-12:]
     return hardwareid
@@ -15,7 +40,17 @@ def ranu(msg):
 
 def sendDataa():
     print("Inside sendData function")
-    hardId = ranuLaptopHardwareId()
+    data = {         #Key   :  Value
+                "firstname": fname_input.text(),
+                "lastname": lname_input.text(),
+                "email": email_input.text(),
+                "serial_number": snumber_input.text(),
+            }
+    cursor.execute("INSERT INTO user (first_name, last_name, email, sno) VALUES (?, ?, ?, ?)", (data["firstname"], data["lastname"], data["email"], data["serial_number"]))
+    conn.commit()
+    QMessageBox.information(None, "Success", "Data Saved Successfully")
+
+    '''hardId = ranuLaptopHardwareId()
     api_url = 'http://localhost:1337/api/registrations'
     response2 = requests.get(api_url+f'?filters[hardwareid][$eq]={hardId}')
 
@@ -43,15 +78,18 @@ def sendDataa():
     else:
         co2 = QMessageBox()
         co2.setText(f"User is already registered with hardwareid {hardId}")
-        co2.exec()
+        co2.exec()'''
+    pass
 
+#2. create a class object
+#ceo = ClassName(actual argument) 
 app = QApplication(sys.argv)
 
 window = QWidget()
-window.setWindowTitle('QGridLayout')
+window.setWindowTitle('QGridLayout') # ceo.method()
 
 iconCO = QIcon('./icon.png')
-window.setWindowIcon(iconCO)
+window.setWindowIcon(iconCO)  # ceo.method()
 
 button1 = QPushButton('Save')
 button2 = QPushButton("How To License")
@@ -82,9 +120,10 @@ layout.addWidget(button2, 4, 1)
 layout.addWidget(button3, 4, 2)
 
 
-window.setLayout(layout)
+window.setLayout(layout)  # ceo.method()
 
+#widget.signal.connect(slot_function)
 button1.clicked.connect(sendDataa)
 
-window.show()
-app.exec()
+window.show()  # ceo.method()
+app.exec()  # ceo.method()
